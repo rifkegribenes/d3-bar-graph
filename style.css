@@ -1,1 +1,9 @@
 /* style.css */
+
+.chart {
+	border: 1px solid gray;
+}
+
+.bar:hover {
+	fill: green;
+}
