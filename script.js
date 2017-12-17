@@ -1102,38 +1102,48 @@ const dataset = [
       18064.7
     ]
   ];
-
-const w = 1000;
+let w = 1000;
 const h = 600;
-const padding = 30;
+const padding = 60;
 
 const formatDate = d3.timeFormat("%b %Y");
 
 const maxVal = d3.max(dataset, (d) => d[1]);
 const yScale = d3.scaleLinear()
                  .domain([0, maxVal])
-                 .range([padding, h - padding]);
+                 .range([h - padding, padding]);
 const maxDate = d3.max(dataset, (d) => new Date(d[0]));
 const minDate = d3.min(dataset, (d) => new Date(d[0]));
 const xScale = d3.scaleTime()
                  .domain([minDate, maxDate])
                  .range([padding, w - padding]);
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
 
 const svg = d3.select("body")
 	.append("svg")
 	.attr("width", w)
 	.attr("height", h)
-	.attr("class", "chart");
+	.attr("class", "chart")
+	.attr("id", "chart");
 
 svg.selectAll("rect")
 	.data(dataset)
 	.enter()
 	.append("rect")
 	.attr("x", (d) => xScale(new Date(d[0])))
-	.attr("y", (d) => h - yScale(d[1]))
+	.attr("y", (d) => yScale(d[1]))
 	.attr("width", 9)
-  .attr("height", (d, i) => yScale(d[1]))
+  .attr("height", (d, i) => h - yScale(d[1]))
   .attr("fill", "navy")
   .attr("class", "bar")
   .append("title")
   .text((d) => formatDate(new Date(d[0])));
+
+svg.append("g")
+   .attr("transform", `translate(0, ${h - padding})`)
+   .call(xAxis);
+
+svg.append("g")
+   .attr("transform", `translate(${padding}, 0)`)
+   .call(yAxis);
