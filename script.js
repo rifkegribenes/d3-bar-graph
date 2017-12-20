@@ -1107,6 +1107,7 @@ const h = 600;
 const padding = 60;
 
 const formatDate = d3.timeFormat("%b %Y");
+const formatCurrency = d3.format("$,.2f");
 
 const maxVal = d3.max(dataset, (d) => d[1]);
 const yScale = d3.scaleLinear()
@@ -1120,12 +1121,21 @@ const xScale = d3.scaleTime()
 const xAxis = d3.axisBottom(xScale);
 const yAxis = d3.axisLeft(yScale);
 
+const tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html((d) => {
+  	return "<div class='tip-qty'>" + formatCurrency(d[1]) +" Billion</div><div class='tip-date'>" + formatDate(new Date(d[0])) + "</div>";
+  });
+
 const svg = d3.select("body")
 	.append("svg")
 	.attr("width", w)
 	.attr("height", h)
 	.attr("class", "chart")
 	.attr("id", "chart");
+
+svg.call(tip);
 
 svg.selectAll("rect")
 	.data(dataset)
@@ -1135,10 +1145,10 @@ svg.selectAll("rect")
 	.attr("y", (d) => yScale(d[1]))
 	.attr("width", 9)
   .attr("height", (d, i) => h - padding - yScale(d[1]))
-  .attr("fill", "navy")
+  .attr("fill", "DarkBlue")
   .attr("class", "bar")
-  .append("title")
-  .text((d) => formatDate(new Date(d[0])));
+  .on('mouseover', tip.show)
+  .on('mouseout', tip.hide);
 
 svg.append("g")
    .attr("transform", `translate(0, ${h - padding})`)
